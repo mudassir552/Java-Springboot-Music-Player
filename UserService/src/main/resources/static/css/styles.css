@@ -1,0 +1,16 @@
+
+.form-group{
+	width:300px;
+	margin:10px;
+}
+.f-body{
+	display: flex;
+	flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 100px; 
+  min-width: 300px; /* Adjust this margin value as needed */
+   transform: translateY(20px); 
+  height:auto;
+
+}
