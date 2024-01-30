@@ -41,7 +41,7 @@ public class Userinfo implements UserDetails{
 	  System.out.println(user.getName());
 	 this.password=user.getPassword();
 	
-	 this.authorities=user.getRoles().stream().map(r -> new SimpleGrantedAuthority(r.getRole().toString().toUpperCase())).collect(Collectors.toList());
+	 this.authorities=user.getRole().stream().map(r -> new SimpleGrantedAuthority(r.getRole().toString().toUpperCase())).collect(Collectors.toList());
 	
 
 	 

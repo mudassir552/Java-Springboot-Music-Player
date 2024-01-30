@@ -1,6 +1,7 @@
 package com.example.demo.Controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,14 +36,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import  com.example.demo.JWT.Jwtservice;
+//import  com.example.demo.JWT.Jwtservice;
 import com.example.demo.RoleRepo.Rolerepo;
 import com.example.demo.Roles.Role;
+import com.example.demo.SongsDto.SongsDto;
 import com.example.demo.UserRepo.Userrepo;
 import com.example.demo.Users.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.Cacheable;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,18 +64,48 @@ public class UserController {
 	@Autowired
 	private Rolerepo rolerepo;
 	
-	@Autowired
-	private Jwtservice jwtservice;
+	/*
+	 * @Autowired private Jwtservice jwtservice;
+	 */
 	
 	
 	
-	@Autowired
-	private SecurityContextRepository securityContext;
+	//@Autowired
+	//private SecurityContextRepository securityContext;
+	
+	
+	String api="http://localhost:8082/songs";
+	  
+	
+
+	
+	
+	@GetMapping("/UserSongs")
+	 public String getSongs(Model model,RedirectAttributes redirectAttributes,@ModelAttribute("userName") String userName,@ModelAttribute()Authrequest authRequest) throws JsonProcessingException {
+	//System.out.println("hiiiiii"+userName);
+	RestTemplate restTemplate = new RestTemplate();
+
+    // Make a GET request to the API and receive the response as a ResponseEntity
+    ResponseEntity<SongsDto[]> responseEntity = restTemplate.getForEntity(api, SongsDto[].class);
+    
+    SongsDto[] songs = responseEntity.getBody();
+    
+    ObjectMapper objectMapper = new ObjectMapper();
+	String jsonString = objectMapper.writeValueAsString(songs);
+    
+    //System.out.println(jsonString);
+    
+    model.addAttribute("Songs",jsonString);
+    //model.addAttribute(userName,authRequest.getUsername());
+  //System.out.println("hiiiiii"+userName);
+  
+
+  redirectAttributes.addFlashAttribute("userName");
+     
+    return "Authorized";
+	 }
+    
 	 
-	
-	
-	String api="http://localhost:8081/song";
-	
 	@Autowired
     private  AuthenticationManager authenticationManager;
   
@@ -112,7 +150,7 @@ public class UserController {
               
           }
           
-          u.setRoles(roles);
+          u.setRole(roles);
 		   userrepo.save(u);
 		   
 		   }
@@ -149,28 +187,34 @@ public class UserController {
       }
       
  @PostMapping("/register" ) 
- public String authenticateAndGetToken(Model model, @ModelAttribute()Authrequest authRequest,HttpServletResponse response,HttpServletRequest request) { 
-    	
-try {	  
-Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-User u = userrepo.findByName(authRequest.getUsername());
-
-//System.out.println("AUTHOOOOOOOOO"+authentication.getAuthorities());
-if(authentication.isAuthenticated() ) { 
-	SecurityContext context =SecurityContextHolder.getContext();
-	context.setAuthentication(authentication);
-	  securityContext.saveContext(context,request,response);
-	String token=jwtservice.generateToken(authRequest.getUsername()); 
-	Cookie c = new Cookie(token, token);
+ public String authenticateAndGetToken(Model model,RedirectAttributes redirectAttributes, @ModelAttribute()Authrequest authRequest,HttpServletResponse response,HttpServletRequest request) { 
 	
-  response.addCookie(c);
-  c.setPath("/");
-  c.setMaxAge(7 * 24 * 60 * 60); // expires in 7 days
-  c.setSecure(true);
-  return "redirect:/Authorized";
-} 
-}
 
+try {	  
+	 
+Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+
+  if(authentication.isAuthenticated()) { 
+	  
+	SecurityContext context =SecurityContextHolder.getContext();
+  context.setAuthentication(authentication);
+  //securityContext.saveContext(context,request,response); 
+  //String token=jwtservice.generateToken(authRequest.getUsername());
+ // System.out.println("JWT TOKENNNN"+token); 
+  //Cookie c = new Cookie(token,token);
+ // c.setMaxAge(7 * 24 * 60 * 60); // expires in 7 days
+ // c.setSecure(true); 
+ // response.addCookie(c);
+  String userName=authRequest.getUsername();
+  System.out.println("auth"+userName);
+  
+  
+ 
+  redirectAttributes.addFlashAttribute("userName");
+
+  return "redirect:/UserSongs";
+  }
+}
 catch(BadCredentialsException e) {
 	return "/error";
 }
@@ -189,8 +233,11 @@ return "/error";
 		 }
 		
 		 	@GetMapping("/Authorized") 
-		     public String user(Model model,@ModelAttribute()Authrequest authRequest) { 
-			  model.addAttribute("message","authenticated"); 
+		     public String user(Model model,@ModelAttribute("userName") String userName) {
+		 		
+			 model.addAttribute("userName",userName); 
+		 		
+		 		 //String userNam = (String) model.asMap().get("userName");
 			 
 			    return "Authorized";
 			  }

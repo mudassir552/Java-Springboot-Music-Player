@@ -59,22 +59,26 @@ public class SecurityConfig {
 	// UserDetails user = userinfoservice.loadUserByUsername("rahul");
 
 	private UserinfoService userinfoservice;
+	
 	  @Autowired 
 	  public SecurityConfig(UserinfoService userinfoservice) {
-	  this.userinfoservice=userinfoservice; }
+	  this.userinfoservice=userinfoservice;
+	  }
 	 
-	@Autowired
-	private Userinfo userinfo;
 	
-	@Bean
-	SecurityContextRepository SecurityContextRepository() {
-		return new DelegatingSecurityContextRepository(new RequestAttributeSecurityContextRepository()
-				  ,new HttpSessionSecurityContextRepository());
-	}
+	
+	/*
+	 * @Bean SecurityContextRepository SecurityContextRepository() { return new
+	 * DelegatingSecurityContextRepository(new
+	 * RequestAttributeSecurityContextRepository() ,new
+	 * HttpSessionSecurityContextRepository()); }
+	 */
 
 	 private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfig.class);
-	@Autowired
-	private JWTFilter JWTFilter;
+	 
+		/*
+		 * @Autowired private JWTFilter JWTFilter;
+		 */
 	/*
 	 * @Bean public JWTFilter jwtFilter() { return new JWTFilter(); }
 	 */
@@ -95,14 +99,14 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.securityContext(sc -> sc.requireExplicitSave(true)).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((requests) -> {
+		http.securityContext(sc -> sc.requireExplicitSave(false)).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((requests) -> {
 			try {
 				requests
-				.requestMatchers("/login","/register", "/js", "/css/**", "/user", "/son").permitAll()
-                
-				 
+				.requestMatchers("/login","/register", "/js/**", "/css/**", "/user", "/son").permitAll()
+                .anyRequest().permitAll()
+				.requestMatchers("/UserSongs").permitAll()
 				  
-				  .requestMatchers("/Authorized").hasRole("NORMAL")
+				  .requestMatchers("/Authorized").hasAnyRole("ADMIN","NORMAL")
 				  .requestMatchers("/acesss").hasRole("NORMAL")
 				  
 				  .and()
@@ -114,7 +118,11 @@ public class SecurityConfig {
 				        .permitAll()
 				)
 				  
-				  .logout().permitAll();
+				  .logout()
+	                .logoutUrl("/logout")
+	                .invalidateHttpSession(true)
+	                .deleteCookies("JSESSIONID")
+	                .logoutSuccessUrl("/login");
 
 			} 
 			
@@ -125,9 +133,9 @@ public class SecurityConfig {
 		}
 
 		).sessionManagement(sessionAuthenticationStrategy ->
-        sessionAuthenticationStrategy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authenticationProvider(authenticationProvider())
-				.addFilterAfter(JWTFilter, UsernamePasswordAuthenticationFilter.class);	
+        sessionAuthenticationStrategy.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+				.authenticationProvider(authenticationProvider());
+				//.addFilterAfter(JWTFilter, UsernamePasswordAuthenticationFilter.class);	
 
 		return http.build();
 	}

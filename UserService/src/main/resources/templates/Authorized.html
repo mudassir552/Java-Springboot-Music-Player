@@ -8,10 +8,32 @@ xmlns:th="http://www.thymeleaf.org"
 	</head>
 		<body>
 			
-			<div  sec:authorize="${hasAuthority('NORMAL'))}" >  
+			<!--<div  sec:authorize="${hasAuthority('NORMAL'))}" >  
 			 <h1>User ID: <span th:text="${Id}"></span></h1>
 			 
-			 </div> 
+			 </div> -->
+			 
+			 <div class="NavContainer">
+			 <input type="text" class="input" placeholder="Enter a song"></input>
+			 <div class="error"><p>please enter a value</div>
+			 <button class="btn">Submit</button>
+				 </div>
+				 </div>
+			 
+			 <div class="searchContainer">
+			 
+			 
+			 
+			 
+             	<div class ="SongsContainer" >
+            
+			   <ul class="innerContainer" >
+                 <li class="inner" th:each="s,iStat:${Songs}" th:attr="data-index=${iStat.count+1} ,Song=${s}"> </li>
+                     
+                </ul>
+          </div>
+		</div>
+       <script th:src="@{/javascript/Song.js}"></script>
 			
 		</body>
 		</html>

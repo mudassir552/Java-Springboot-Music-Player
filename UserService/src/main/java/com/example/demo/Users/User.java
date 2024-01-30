@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.example.demo.Roles.Role;
 import com.fasterxml.jackson.databind.util.StdConverter;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -24,6 +25,7 @@ import lombok.Builder;
 
 @Entity
 @Table(name="user")
+@Cacheable
 public class User {
 
 	
@@ -88,16 +90,6 @@ public class User {
 		this.name = name;
 	}
 
-	public List<Role> getRoles() {
-		return role;
-	}
-
-
-	public void setRoles(List<Role> role) {
-		this.role = role;
-	}
-
-
 	public String getPassword() {
 		return Password;
 	}
@@ -109,8 +101,13 @@ public class User {
 	}
 
 
+
 	public void setRole(List<Role> role) {
 		this.role = role;
 	}
+	
+
+
+	
 	
 }
