@@ -1,0 +1,39 @@
+name: Docker Compose
+
+on:
+  push:
+    paths:
+      - '**/pom.xml'
+      - '**/src/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build Docker images with Jib
+        run: mvn compile jib:build
+
+      - name: Start Docker Compose
+        run: docker-compose up -d
+
+      - name: Watch for file changes
+        uses: paz-labs/action-watch@v1
+        with:
+          directories: |
+            .
+          ignoredDirectories: |
+            .git
+            .github
+          run: |
+            docker-compose down
+            docker-compose up -d
