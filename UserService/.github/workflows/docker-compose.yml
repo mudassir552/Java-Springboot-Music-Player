@@ -33,7 +33,6 @@ jobs:
             .
           ignoredDirectories: |
             .git
-            .github
           run: |
             docker-compose down
             docker-compose up -d
