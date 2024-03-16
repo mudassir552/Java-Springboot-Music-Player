@@ -66,7 +66,7 @@
         <!-- Use the latest version -->
     </dependency>
     <!-- You also need an actual logging implementation like Logback -->
-    <!-- Example for Logback implementation -->
+   
     <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
