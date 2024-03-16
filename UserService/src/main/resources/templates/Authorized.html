@@ -13,26 +13,45 @@ xmlns:th="http://www.thymeleaf.org"
 			 
 			 </div> -->
 			 
+			 <div class="Account_info">
+				 <img class="user_img" th:src="@{/images/user.png}" alt="user-img">
+				 
+				 <ul class="Account_details">
+					 <li><a href="/userinfo">User info</a></li>
+					 <li><a href="/aboutus">About Us</a></li>
+					 
+					 <li><a href="/logout">Logout</a></li>
+				 </ul>
+				 </div>
+			 
 			 <div class="NavContainer">
 			 <input type="text" class="input" placeholder="Enter a song"></input>
 			 <div class="error"><p>please enter a value</div>
 			 <button class="btn">Submit</button>
 				 </div>
-				 </div>
+				
 			 
 			 <div class="searchContainer">
 			 
-			 
-			 
-			 
              	<div class ="SongsContainer" >
             
-			   <ul class="innerContainer" >
+			   <ul class="innerContainer">
                  <li class="inner" th:each="s,iStat:${Songs}" th:attr="data-index=${iStat.count+1} ,Song=${s}"> </li>
-                     
+                       
                 </ul>
           </div>
 		</div>
+		
+		<div class="Pagination">
+			<ul class="paginationlist">
+				<button class="prev">prev</button>
+				<li>1</li>
+				<li>2</li>
+				<li>3</li>
+				<button class="next">next</button>
+				
+				</ul>
+			</div>
        <script th:src="@{/javascript/Song.js}"></script>
 			
 		</body>

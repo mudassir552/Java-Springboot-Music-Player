@@ -1,5 +1,11 @@
 
 
+*{  
+	margin:0px;
+    padding:0px;
+	box-sizing: border-box;
+}
+
 .searchContainer{
 	display:flex;
 	justify-content: center;
@@ -32,7 +38,7 @@ body{
 	position:absolute;
 
    margin-left:330px;
-	top:49px;
+	top:45px;
 	width:100px;
 	border-radius:20px;
 	
@@ -56,7 +62,7 @@ body{
 
 
 .Songimage{
-	max-width:100%;
+	max-width:80%;
 	height:auto;
 	display:block;
 	object-fit: cover;
@@ -67,7 +73,7 @@ body{
 }
 
 .card{
-	margin:20px;
+	
 	max-width:300px;
 	
     margin-top:100px;
@@ -120,14 +126,13 @@ body{
 .audio{
 	
      margin-bottom: -20px;
-	height:30px;
+	height:40px;
 	 display:block;
 	margin:auto;
-	max-width:30%;
-	
+	max-width:280px;
+	position:relative;
 	
 }
-
 .input{
 	margin-top:50px;
 	position: absolute;
@@ -135,9 +140,9 @@ body{
 }
 
 .error{
-	position:relative;
+	position:absolute;
 	top:80px;
-   
+    
 	display: none;
 	color:red;
 	transition: opacity 1s;
@@ -147,4 +152,60 @@ body{
 .NavContainer{
 	display:flex;
 	justify-content: center;
+}
+
+.empty_Songs{
+	margin-top:250px;
+	position:absolute;
+	margin-left:-150px;
+	display:block;
+	width:600px;
+
+}
+.user_img{
+	width:40px;
+	position:absolute;
+
+	top:5px;
+	right:40px;
+}
+.Account_info {
+		
+    width:200px;
+    height:200px;
+    position:absolute;
+    right:0;
+	 
+}
+.Account_info ul {
+
+	position:absolute;
+	right:0;
+   background-color:greenyellow;
+	top:45px;
+   text-align: center;
+   display:none;
+}
+.Account_info li{
+	
+	list-style: none;
+	margin-left:0px;
+	width:200px;
+	margin:10px;
+
+}
+.Account_info li:hover{
+	background-color: bisque;
+}
+
+
+.Pagination ul{
+	display:flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+.Pagination ul li {
+	list-style: none;
+	margin:10px;
 }

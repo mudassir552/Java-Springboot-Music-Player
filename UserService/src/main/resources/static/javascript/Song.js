@@ -4,24 +4,47 @@ let SongsContainer=document.querySelector('.SongsContainer');
 let inner=document.querySelector('.inner');
 let Songssize=0;
 let input =document.querySelector('.input')
-//let audio=null;
-//let loader =document.querySelector('.loader');
- //loader.style.display ='none';
+let user_img =document.querySelector('.user_img');
+let submit_btn=document.querySelector('.btn')
+let Accountdetails=document.querySelector('.Account_details');
 
-console.log(SongsContainer);
-  // Add a class to the <div> element
-
-                
-			
  let error=document.querySelector('.error');
  let searchContainer=document.querySelector('.search-btn');
  let btn=document.querySelector('.btn');
+let prev=document.querySelector('.prev');
+let next=document.querySelector('.next');
+ let SongsObject=inner.getAttribute('Song');
+ let Songs=JSON.parse(SongsObject);
+ let pagesize=3;
+ let page=0;
+ 
+
+user_img.addEventListener('mouseover',()=>{
+    
+	Accountdetails.style.display='block';
+	
+})
+
+
+
+Accountdetails.addEventListener('mouseover', () => {
+    
+    Accountdetails.style.display = 'block';
+});
+
+Accountdetails.addEventListener('mouseout', () => {
+    
+    Accountdetails.style.display = 'none';
+});
+
+
+			
+
 let ztml="";
 let html="";
- let SongsObject=inner.getAttribute('Song');
- //console.log(SongsObject);
- let Songs=JSON.parse(SongsObject);
-   console.log(Songs);
+
+
+ 
 for(let i=0;i<Songs.length;i++){
 	html+=`
 	
@@ -30,7 +53,7 @@ for(let i=0;i<Songs.length;i++){
      <p>${Songs[i].song}</p>
                 <p>${Songs[i].artist}</p>
                 <img  class="Songimage" src="data:image/png;base64,${Songs[i].image}" alt="Song Image">
-                 <audio controls class="audio" class="audios">
+                 <audio controls class="audio "preload="metadata">
                     <source src="data:audio/mpeg;base64,${Songs[i].songFile}"  type="audio/mpeg">
                     Your browser does not support the audio element
                 </audio>
@@ -41,22 +64,22 @@ for(let i=0;i<Songs.length;i++){
    }
      SongsContainer.innerHTML=html;
      
+     
+     input.addEventListener('input',()=>{
+		 error.style.display="none";
+	 })
+     
      btn.addEventListener("click",()=>{
 		  
 		 let rtml=''
 		
-		   console.log(input.value);
-		   console.log(Songs.length);
+		   
 		   let res=filterSongs(input.value);
-		   console.log("res",res);
+		
 		   
 		  if(input.value==""  ){
 			  
-			   /*let p = document.createElement('p');
-                p.classList.add('emp');
-               error.appendChild(p);
-               let emp= document.querySelector('.emp');*/
-               
+			  
               
                error.style.display="block";
 
@@ -69,9 +92,9 @@ for(let i=0;i<Songs.length;i++){
 		 if( input.value!=null && res==false){
 			 
 			 error.style.display="none";
-			 //existingError.parentNode.removeChild(existingError);
+		
 			        
-			        rtml+=`<h2 >There are no songs to display</h2>`
+			        rtml+=`<h2 class="empty_Songs" ><p>There are no songs to display<p></h2>`
 			       
 			        
 			     	SongsContainer.innerHTML=rtml;
@@ -104,8 +127,8 @@ if (Songssize==0) {
      <p>${e.song}</p>
                 <p>${e.artist}</p>
                 <img  class="Songimage" src="data:image/png;base64,${e.image}" alt="Song Image">
-                 <audio controls >
-                    <source src="data:audio/mpeg;base64,${e.songFile}" class="audio" type="audio/mpeg">
+                 <audio controls class="audio" preload="metadata">
+                    <source src="data:audio/mpeg;base64,${e.songFile}"  type="audio/mpeg">
                     Your browser does not support the audio element
                 </audio>
   </div>
@@ -120,5 +143,80 @@ if (Songssize==0) {
 	
 
 }
+	function fetchDataAndUpdateUI(page){
+		
+		if(page<0){
+			prev.disabled=true;
+			return;
+		}
+		
+		let z="";
+		const params = {
+  page: page,
+  size: pagesize
+};
 
+// Convert the parameters to a query string
+const queryString = Object.keys(params)
+  .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+  .join('&');
+
+// Specify the URL with the query string
+const url = 'http://localhost:8082/songs?' + queryString
+console.log(url);
+
+      
+
+		fetch(url).then(response=>response.json()).then(data=>{
+			console.log(data[0]);
+			
+			 if (data.length ===0 ) {
+                next.disabled=true; 
+                return;
+               
+            }
+			
+			for(let i=0;i<data.length;i++){
+			z+=` <div class="card">
+   <div class="card-body">
+     <p>${data[i].song}</p>
+                <p>${data[i].artist}</p>
+                <img  class="Songimage" src="data:image/png;base64,${data[i].image}" alt="Song Image">
+                 <audio controls class="audio "preload="metadata">
+                    <source src="data:audio/mpeg;base64,${data[i].songFile}"  type="audio/mpeg">
+                    Your browser does not support the audio element
+                </audio>
+  </div>
+</div>`
+			
+			}
+			
+             
+                next.disabled = false;
+                prev.disabled=false;
+                	SongsContainer.innerHTML=z; // Enable the button if there are more elements to display
+            
+        })
+        .catch(error => {
+            console.error('Error occurred during fetch:', error);
+            // Handle the error here if needed
+       
+		})
+		
+		  
+		
+		 
+	}
+
+   next.addEventListener("click",()=>{
+	    page = page + 1;
+	   fetchDataAndUpdateUI(page)
+	  
+   })
+
+    prev.addEventListener("click",()=>{
+		 page = page - 1;
+	   fetchDataAndUpdateUI(page)
+	  
+   })
   
