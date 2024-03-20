@@ -19,6 +19,7 @@ jobs:
           java-version: '11'
 
       - name: Build Docker images with Jib
+        working-directory:/home/runner/work/Java-Springboot-Music-Player/Java-Springboot-Music-Player/UserService
         run: mvn compile jib:build
 
       - name: Start Docker Compose
