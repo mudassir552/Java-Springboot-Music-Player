@@ -106,7 +106,7 @@
 			<artifactId>jjwt-api</artifactId>
 			<version>0.11.5</version>
 		</dependency>
-		<!--https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtoo-->
+		<!--https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devt-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
