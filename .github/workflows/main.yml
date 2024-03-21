@@ -29,7 +29,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build Docker images with Jib
-        run: mvn clean compile jib:build
+        run: mvn compile jib:dockerBuild
         env:
           MAVEN_OPTS: '-Dmaven.repo.local=$HOME/.m2/repository'
 
