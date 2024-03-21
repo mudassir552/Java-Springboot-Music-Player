@@ -72,16 +72,16 @@ public class SongController  {
 	          if (s != null) {
 	              // Song added successfully - add the song object to the model and return the view name
 	              model.addAttribute("song", s);
-	              return "/songDetailsView"; // Replace "songDetailsView" with your actual view name
+	               // Replace "songDetailsView" with your actual view name
 	          } else {
 	              // Some error occurred during song addition - handle it appropriately
-	              return "/errorView"; // Replace "errorView" with your error view name
+	              return "some error occured"; // Replace "errorView" with your error view name
 	          }
 	      } catch (Exception e) {
 	    	  e.printStackTrace();
 	      }
 	          // Handle IO Exception if necessary
-	          return "/errorView"; // Replace "errorView" with your error view name
+	          return "some error occured"; // Replace "errorView" with your error view name
 	      }
 	  
 

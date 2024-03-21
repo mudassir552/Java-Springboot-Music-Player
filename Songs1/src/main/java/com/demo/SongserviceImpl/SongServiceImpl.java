@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +18,7 @@ import com.demo.SongsService.SongsService;
 
 @Component
 public class SongServiceImpl implements SongsService{
+	
 	
 	
 	
