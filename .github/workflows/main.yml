@@ -19,7 +19,7 @@ jobs:
           java-version: '11'
 
       - name: Build Docker images with Jib
-        run: mvn compile jib:build
+        run: mvn clean compile jib:build
 
       - name: Start Docker Compose
         run: docker-compose up -d
