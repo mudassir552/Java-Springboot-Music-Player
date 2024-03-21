@@ -19,7 +19,6 @@ jobs:
           java-version: '11'
 
       - name: Build Docker images with Jib
-        working-directory:C:/Users/moham/git/repository/UserService
         run: mvn compile jib:build
 
       - name: Start Docker Compose
