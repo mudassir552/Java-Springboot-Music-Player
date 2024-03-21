@@ -100,7 +100,7 @@
   
 
 
-		<!--https://mvnrepository.com/artifact/org.springframework.security/spring-security-jwt-->
+		<!--https://mvnrepository.com/artifact/org.springframework.security/spring-security-jwt>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
