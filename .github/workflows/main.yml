@@ -32,7 +32,8 @@ jobs:
         run: mvn compile
         env:
           MAVEN_OPTS: '-Dmaven.repo.local=$HOME/.m2/repository'
-
+      - name: Show contents of target/classes directory
+        run: ls $GITHUB_WORKSPACE/target/classes
       - name: Build Docker images with Jib
         run: mvn compile jib:dockerBuild
         env:
