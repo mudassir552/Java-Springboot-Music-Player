@@ -65,7 +65,7 @@
         <artifactId>slf4j-api</artifactId>
         <!-- Use the latest version -->
     </dependency>
-    <!-- You also need an actual logging implementation like Logback -->
+    <!-- You also need an actual logging implementation like Logback   -->
    
     <dependency>
         <groupId>ch.qos.logback</groupId>
