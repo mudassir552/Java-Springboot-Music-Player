@@ -44,6 +44,8 @@ public class UserinfoService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	
 		System.out.println("attttttttttttttt"+username);
+		
+		
 		User users=userrepository.findByName(username);
 		
 		

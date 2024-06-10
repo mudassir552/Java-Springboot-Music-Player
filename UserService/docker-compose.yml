@@ -11,7 +11,7 @@ services:
       EUREKA_INSTANCE_HOSTNAME: eureka
       EUREKA_INSTANCE_PREFER-IP-ADDRESS: true
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://eureka:8761/eureka || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://eureka:8761  || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -37,7 +37,9 @@ services:
     image: shakeebmd9375/userservice:s1
     ports:
       - 8080:8080
-   
+    depends_on:
+      - eureka
+      - mysql
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/userdb
       SPRING_DATASOURCE_USERNAME: root
@@ -49,6 +51,12 @@ services:
    image: mongo:latest
    ports:
     - 27017:27017
+  
+   healthcheck:
+      test: ["CMD-SHELL", "mongo --eval 'db.runCommand({ ping: 1 })' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
    
    
    

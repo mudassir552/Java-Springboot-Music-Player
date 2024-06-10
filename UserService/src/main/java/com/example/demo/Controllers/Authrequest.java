@@ -2,25 +2,31 @@ package com.example.demo.Controllers;
 
 import java.util.List;
 
+
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 import com.example.demo.Roles.Role;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 public class Authrequest {
 	
 	
-	 @NonNull
+	@NotEmpty(message = "Username is mandatory")
 	private String username; 
-	 @NonNull
+	 
+	@NotEmpty(message = "password is mandatory")
 	private String password;
 	 
-	 @NonNull
+	 
 	private String Email ;
-	 @NonNull
+	
 	private List<Role>roles;
 	
 	 public Authrequest() {

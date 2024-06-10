@@ -1,12 +1,14 @@
 
   package com.example.demo.WebSecurityConfig; 
-  import org.springframework.beans.factory.annotation.Autowired; 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired; 
   import org.springframework.context.annotation.Bean; 
   import org.springframework.context.annotation.Configuration; 
   import org.springframework.security.authentication.AuthenticationManager;
   import org.springframework.security.authentication.AuthenticationProvider;
-  
-  import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
   
   import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
   
@@ -17,42 +19,52 @@
   
   import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
   import org.springframework.security.crypto.password.PasswordEncoder;
-  
-  import org.springframework.security.web.SecurityFilterChain;
-  
-  
-  import org.springframework.web.cors.CorsConfiguration;
+
+import org.springframework.security.web.SecurityFilterChain;
+
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
   import org.springframework.web.cors.CorsConfigurationSource; 
   import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-  
-  import com.example.demo.UserinfoService.UserinfoService;
-  
-  
+
+import com.example.demo.UserinfoService.UserinfoService;
+
+;
   
   @EnableWebSecurity
    @Configuration 
   public class SecurityConfig {
   
   
-  
+	  private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
   
   // UserDetails user = userinfoservice.loadUserByUsername("rahul");
   
   private UserinfoService userinfoservice;
   
-  @Autowired public SecurityConfig(UserinfoService userinfoservice) {
+  @Autowired 
+  public SecurityConfig(UserinfoService userinfoservice) {
   this.userinfoservice=userinfoservice; }
   
   
   
-
+@Bean
+SecurityContextRepository securityContextRepository() {
+	
+	return new DelegatingSecurityContextRepository(new RequestAttributeSecurityContextRepository()
+			,new HttpSessionSecurityContextRepository());
+}
   
   
   
 
   
   
-  @Bean public PasswordEncoder passwordEncoder() { return new
+  @Bean 
+  public PasswordEncoder passwordEncoder() { return new
   BCryptPasswordEncoder();
   
   }
@@ -69,33 +81,38 @@
   
   {
 	  
-	  System.out.println("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"+requests.toString());
+	  
 	  try {
-		requests.requestMatchers("**/login/**","**/register/**","**/html/**", "**/js/**",
-  "**/css/**", "**/user/**", "**/son/**").permitAll()
-  .requestMatchers("/user").permitAll()
+		  
+		  logger.info("enter security configggggggggg");
+		requests.requestMatchers("**/login/**","**/html/**", "**/js/**",
+  "**/css/**", "**/user/**","**/html/**", "**/son/**","/favicon.ico","/webjars/**","/css/styles.css","/error","/","public/","static/","/ProfileImage","resources/","**/Song.js/**","**/images/**","/UserImage","*/*.jpg").permitAll()
+  .requestMatchers("/user","/actuator/**").permitAll()
+  .requestMatchers("/register","/accounts","/acesss","/Authorized","/userinfo").permitAll()
   
-  .requestMatchers("/UserSongs").permitAll()
-  .requestMatchers("/accounts").permitAll()
-  .requestMatchers("/userinfo").permitAll()
-  .requestMatchers("/Authorized").permitAll()
-  .requestMatchers("/acesss").hasRole("NORMAL")
+  .requestMatchers("/AuthDetails").authenticated()
+  .requestMatchers("/UserSongs").authenticated()
   
-  .and().formLogin(formLogin -> formLogin .loginPage("/login")
-  .loginProcessingUrl("/register") .defaultSuccessUrl("/Authorized")
-  .permitAll() )
-  
+  .and().formLogin(formLogin -> formLogin.loginPage("/login")
+		  
+  .loginProcessingUrl("/register").defaultSuccessUrl("/UserSongs") .failureUrl("/login?error=true")
+  )
   .logout().logoutUrl("/logout").invalidateHttpSession(true)
   .deleteCookies("JSESSIONID").logoutSuccessUrl("/login");
+  //.and().authorizeHttpRequests()
+  //.requestMatchers("/AuthDetails").authenticated();
   
   }
   
   catch (Exception e) { // TODO Auto-generated catch block e.printStackTrace();
-  } }
+  } 
+	  }
   
   ).sessionManagement(sessionAuthenticationStrategy ->
-  sessionAuthenticationStrategy.sessionCreationPolicy(SessionCreationPolicy.
-  ALWAYS)) .authenticationProvider(authenticationProvider());
+  sessionAuthenticationStrategy.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)).authenticationProvider(authenticationProvider());
+  
+  //.addFilterBefore(new CustomAuthenticationFilter(authenticationManager(http)), UsernamePasswordAuthenticationFilter.class);
+
   //.addFilterAfter(JWTFilter, UsernamePasswordAuthenticationFilter.class);
   
   return http.build(); 
@@ -105,7 +122,8 @@
   public CorsConfigurationSource corsConfigurationSource() {
   UrlBasedCorsConfigurationSource source = new
   UrlBasedCorsConfigurationSource(); CorsConfiguration config = new
-  CorsConfiguration(); config.addAllowedOrigin("http://localhost:8081"); 
+  CorsConfiguration(); 
+  config.addAllowedOrigin("*"); 
   config.addAllowedMethod("*");
   config.addAllowedHeader("*"); config.setAllowCredentials(true);
   source.registerCorsConfiguration("/**", config); return source; }

@@ -39,24 +39,35 @@ public class User {
 	private String Email;
 	
 	
+	private byte[] Profileimage;
+	
 
  @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id",nullable=false)
 	private List<Role> role;
 	
-   public User(Long id, String name, String email, List<Role> role, String password) {
-		super();
-		Id = id;
-		this.name = name;
-		Email = email;
-		this.role = role;
-		Password = password;
-	}
+  
 
 
-	
-   @Column(nullable=false)
+
+
+
+
+@Column(nullable=false)
 	private String Password;
+
+
+
+
+public User(Long id, String name, String email, byte[] profileimage, List<Role> role, String password) {
+	super();
+	Id = id;
+	this.name = name;
+	Email = email;
+	Profileimage = profileimage;
+	this.role = role;
+	Password = password;
+}
 	
 	
 	public User() {
@@ -105,6 +116,18 @@ public class User {
 	public void setRole(List<Role> role) {
 		this.role = role;
 	}
+
+
+	public byte[] getProfileimage() {
+		return Profileimage;
+	}
+
+
+	public void setProfileimage(byte[] profileimage) {
+		Profileimage = profileimage;
+	}
+	
+	
 	
 
 

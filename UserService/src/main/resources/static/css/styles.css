@@ -123,7 +123,7 @@ body{
 
 
 
-.audio{
+/*.audio{
 	
      margin-bottom: -20px;
 	height:40px;
@@ -132,6 +132,12 @@ body{
 	max-width:280px;
 	position:relative;
 	
+}*/
+
+.audio{
+	
+	 overflow:hidden;
+	 max-width:90%;
 }
 .input{
 	margin-top:50px;
@@ -208,4 +214,27 @@ body{
 .Pagination ul li {
 	list-style: none;
 	margin:10px;
+}
+
+.image_Container{
+
+	width: 70px; /* Adjust the width and height as needed */
+    height: 70px;
+    border-radius: 50%; /* This creates a circular shape */
+    overflow: hidden; /* This ensures the image doesn't overflow outside the circle */
+     position: absolute; /* Position the container absolutely */
+    top: 0; /* Position the container at the top */
+    right: 0;
+    
+    
+}
+.user_img{
+	
+	 width: 100%; /* Ensures the image fills the circular container */
+    height: 100%; /* Ensures the image fills the circular container */
+    object-fit: cover; /* Ensures the image covers the circular container */
+    display: block; /* Fixes spacing issues */
+    position: absolute; /* For positioning the image */
+    top: 0; /* Position the image at the top */
+    left: 0;
 }
