@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  eureka:
+    image: shakeebmd9375/eurekaserver:e1
+    ports:
+      - 8761:8761
+    environment:
+      EUREKA_CLIENT_REGISTER-WITH-EUREKA: false
+      EUREKA_CLIENT_FETCH-REGISTRY: false
+      EUREKA_INSTANCE_HOSTNAME: eureka
+      EUREKA_INSTANCE_PREFER-IP-ADDRESS: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://eureka:8761/eureka || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+        
+  mysql:
+    image: mysql:latest
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: shakeebS22
+      MYSQL_DATABASE: userdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "mysql", "-u", "root", "-pshakeebS22"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      
+  userservice:
+    image: shakeebmd9375/userservice:s1
+    ports:
+      - 8080:8080
+   
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/userdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: shakeebS22
+      EUREKA_CLIENT_FETCH-REGISTRY: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka:8761/eureka"
+      
+  mongodb:
+   image: mongo:latest
+   ports:
+    - 27017:27017
+   
+   
+   
+   
+                                   
+  songservice:
+    image: shakeebmd9375/com.cgi.songs:S2
+    ports:
+      - 8082:8082
+    depends_on:
+      - eureka
+      - mongodb
+    environment:
+      EUREKA_CLIENT_FETCH-REGISTRY: "true"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka:8761/eureka"
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/SongsDB
