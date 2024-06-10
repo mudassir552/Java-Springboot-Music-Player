@@ -13,12 +13,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
-import com.demo.Controller.SongController;
 import com.demo.SongsRepo.SongsRepo;
+import com.demo.controller.SongController;
 
 
 @SpringBootApplication
+@CrossOrigin(origins="*")
 @ComponentScan(basePackages={"com.demo.*"})
 @EnableMongoRepositories(basePackageClasses={SongsRepo.class,SongController.class})
 @EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
@@ -31,8 +33,5 @@ public class MainApplication {
 	
 	}
 	
-	   @Bean
-	    public ConcurrentMapCacheManager cacheManager() {
-	        return new ConcurrentMapCacheManager("myCache");
-	    }
+	    
 }

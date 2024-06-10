@@ -1,6 +1,7 @@
-package com.demo.Controller;
+package com.demo.controller;
 
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -8,12 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -37,14 +41,19 @@ import java.util.*;
 
 
 @Controller
+@CrossOrigin(origins="*")
 public class SongController  {
       
-	/*
-	 * private final RestTemplate restTemplate;
-	 * 
-	 * @Autowired public SongController (RestTemplate restTemplate) {
-	 * this.restTemplate = restTemplate; }
-	 */
+	
+	  private  RestTemplate restTemplate;
+	 
+	  
+	  @Value("${cache.eviction.url}")
+	  private String evictionUrl;
+	  @Autowired 
+	  public SongController (RestTemplate restTemplate) {
+	  this.restTemplate = restTemplate; }
+	
 	    
 	    
 		 
@@ -62,13 +71,16 @@ public class SongController  {
     
     
 	  @PostMapping("/AddSong")
+	  @ResponseBody
 	  public String addSong(@RequestParam("song") String song,
 	                        @RequestParam("artist") String artist,
 	                        @RequestParam("image") MultipartFile image,
-	                        @RequestParam("SongFile") MultipartFile SongFile ,
+	                        @RequestParam("SongFile") MultipartFile songFile ,
 	                        Model model)  {
 	      try {
-	          Songs s = SongServiceImpl.addSongs(song, artist, image,SongFile);
+	          Songs s = SongServiceImpl.addSongs(song, artist, image,songFile);
+	          restTemplate.postForObject(evictionUrl, null, Void.class);
+	          
 	          if (s != null) {
 	              // Song added successfully - add the song object to the model and return the view name
 	              model.addAttribute("song", s);
@@ -81,7 +93,7 @@ public class SongController  {
 	    	  e.printStackTrace();
 	      }
 	          // Handle IO Exception if necessary
-	          return "some error occured"; // Replace "errorView" with your error view name
+	          return "some eroor occured"; // Replace "errorView" with your error view name
 	      }
 	  
 
@@ -116,11 +128,13 @@ return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList())
 	  
 	  @GetMapping("/songs")   
         public ResponseEntity<List<Songs>> songs(@RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "1") int size) { 
+        @RequestParam(defaultValue = "5") int size) { 
 		 //List<Songs> List<Songs>
 			Pageable pageable = PageRequest.of(page, size);
 			Query query = new Query()
 		            .with(pageable);
+			
+			
 		  List<Songs> songs = mongoOperations.find(query, Songs.class);
 
 	        if (songs.isEmpty()) {
