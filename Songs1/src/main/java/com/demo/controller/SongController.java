@@ -1,10 +1,14 @@
 package com.demo.controller;
 
 
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -12,18 +16,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
@@ -31,12 +36,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import com.demo.MainApplication;
 import com.demo.SongsRepo.SongsRepo;
 import com.demo.SongserviceImpl.*;
+import com.demo.songresponsedto.AllSongsResponse;
+import com.demo.songresponsedto.SongsResponse;
 import com.demo.songs.Songs;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.result.DeleteResult;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -44,9 +55,13 @@ import java.util.*;
 @CrossOrigin(origins="*")
 public class SongController  {
       
+	private static final Logger logger = LoggerFactory.getLogger(SongController.class);
 	
 	  private  RestTemplate restTemplate;
 	 
+	  
+	   @Autowired
+	    private MainApplication mainApplication;
 	  
 	  @Value("${cache.eviction.url}")
 	  private String evictionUrl;
@@ -72,28 +87,57 @@ public class SongController  {
     
 	  @PostMapping("/AddSong")
 	  @ResponseBody
-	  public String addSong(@RequestParam("song") String song,
+	  public ResponseEntity<?> addSong( @RequestParam("userid") Long userid,
+			                 @RequestParam("song") String song,
 	                        @RequestParam("artist") String artist,
 	                        @RequestParam("image") MultipartFile image,
-	                        @RequestParam("SongFile") MultipartFile songFile ,
+	                        @RequestParam("songFile") MultipartFile songFile ,
 	                        Model model)  {
 	      try {
-	          Songs s = SongServiceImpl.addSongs(song, artist, image,songFile);
+	    	  
+	    	  logger.info("Received request to add song:");
+	            logger.info("User ID: {}", userid);
+	            logger.info("Song: {}", song);
+	            logger.info("Artist: {}", artist);
+	            logger.info("Image File Name: {}", image.getOriginalFilename());
+	            logger.info("Song File Name: {}", songFile.getOriginalFilename());
+
+	          Songs s = SongServiceImpl.addSongs(userid,song, artist, image,songFile);
+	          
+	       
 	          restTemplate.postForObject(evictionUrl, null, Void.class);
 	          
+	         
+	        
+	          
 	          if (s != null) {
-	              // Song added successfully - add the song object to the model and return the view name
-	              model.addAttribute("song", s);
-	               // Replace "songDetailsView" with your actual view name
+	        	  SongsResponse songResponse = new SongsResponse.Builder()
+		        		    .userId(s.getId())
+		        		    .song(s.getSong())
+		        		    .artist(s.getArtist())
+		        		    .image(s.getImage())
+		        		    .songFile(s.getSongFile())
+		        		    .build();
+		          
+                return ResponseEntity.status(HttpStatus.CREATED).body(songResponse);
+	               
 	          } else {
-	              // Some error occurred during song addition - handle it appropriately
-	              return "some error occured"; // Replace "errorView" with your error view name
+	              
+	              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Replace "errorView" with your error view name
 	          }
-	      } catch (Exception e) {
-	    	  e.printStackTrace();
+	      } catch (IllegalArgumentException e) {
+	    	  logger.error("Illegal Arguments , please check the parameters", e);
 	      }
-	          // Handle IO Exception if necessary
-	          return "some eroor occured"; // Replace "errorView" with your error view name
+	      
+	      catch (Exception e) {
+	    	  logger.error("Internal server error", e);
+	    	  
+	    	  
+	    	  return ResponseEntity.status(500).body(null);
+	    	  
+	      }
+		return ResponseEntity.status(500).body(null);
+	        
 	      }
 	  
 
@@ -127,21 +171,41 @@ return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList())
 	  
 	  
 	  @GetMapping("/songs")   
-        public ResponseEntity<List<Songs>> songs(@RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size) { 
+        public ResponseEntity<?> songs(@RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "15") int size) throws IOException { 
 		 //List<Songs> List<Songs>
+		
+		 
+		  
+		  
 			Pageable pageable = PageRequest.of(page, size);
 			Query query = new Query()
 		            .with(pageable);
 			
+		logger.info("page"+page);
+		logger.info("size"+size);
 			
 		  List<Songs> songs = mongoOperations.find(query, Songs.class);
-
+		  
+		  if(songs.isEmpty()|| songs.size()==0) {
+			   
+			  mainApplication.saveSong();
+		
+		  }
+		  
+		    Long userid=songs.get(0).getUserId();
+		  long totalSongs = mongoOperations.count(new Query(), Songs.class);
+	        int totalPages = (int) Math.ceil((double) totalSongs / size);
+	        logger.info("totalpgaes"+totalPages);
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
 	        if (songs.isEmpty()) {
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+	        	AllSongsResponse emptyResponse = new AllSongsResponse(Collections.emptyList(), totalPages, page,userid);
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(emptyResponse);
+	            
 	        }
 
-	        return ResponseEntity.status(HttpStatus.OK).body(songs);
+	        return ResponseEntity.status(HttpStatus.OK).body(new AllSongsResponse(songs,totalPages,page,userid ));
 	  }
 	 
 	 
@@ -163,4 +227,21 @@ return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList())
 	
 		
 	}
-}
+	
+	
+	    @DeleteMapping("/songs/{Id}")
+		public ResponseEntity<?> deleteSong(@PathVariable  String Id) {
+			logger.info("Id"+Id);
+			  Query query = new Query(Criteria.where("_id").is(Id));
+			  
+			  DeleteResult result = mongoOperations.remove(query, Songs.class);
+
+			    if (result.getDeletedCount() > 0) {
+			    	 restTemplate.postForObject(evictionUrl, null, Void.class);
+			        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
+			    } else {
+			        return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+			    }
+		}
+	}
+

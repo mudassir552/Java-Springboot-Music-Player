@@ -20,7 +20,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/com.netflix.netflix-commons/netflix-commons-util -->
+		
 
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
 
@@ -46,10 +46,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
+		
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -141,7 +138,7 @@
         <version>3.4.0</version>
         <configuration>
           <to>
-            <image>shakeebmd9375/${project.artifactId}:S2</image>
+            <image>shakeebmd9375/${project.artifactId}:S8</image>
           </to>
         </configuration>
       </plugin>

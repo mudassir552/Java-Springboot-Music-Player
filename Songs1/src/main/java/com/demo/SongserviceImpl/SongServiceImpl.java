@@ -29,7 +29,7 @@ public class SongServiceImpl implements SongsService{
 	  @Autowired 
 	  private MongoOperations mongoOperations;
 
-	@Override
+	
 	public Songs addSongs(String song, String artist, MultipartFile image) {
 		 Songs s1 = new Songs();
 		  Songs k =null;
@@ -70,14 +70,15 @@ public class SongServiceImpl implements SongsService{
 
 
 
-@Override
-public Songs addSongs(String song, String artist, MultipartFile image, MultipartFile audio) {
+
+public Songs addSongs(Long userid,String song, String artist, MultipartFile image, MultipartFile audio) {
     Songs s1 = new Songs();
     Songs k = null;
 
     if ((!image.isEmpty()) && (!song.isEmpty())) {
         try {
             // Process image and audio files
+        	s1.setUserId(userid);
             s1.setArtist(artist);
             s1.setSong(song);
             s1.setImage(readBytesFromInputStream(image.getInputStream()));
@@ -106,4 +107,12 @@ private byte[] readBytesFromInputStream(InputStream inputStream) throws IOExcept
 
     return byteArrayOutputStream.toByteArray();
 }
+
+
+
+
+
+
+
+
 }

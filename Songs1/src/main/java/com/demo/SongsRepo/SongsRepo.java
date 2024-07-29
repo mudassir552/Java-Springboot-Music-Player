@@ -19,7 +19,7 @@ public interface SongsRepo extends MongoRepository<Songs,String>{
 	
 
     @Cacheable("myCache")
-	List<Songs> findBySongStartsWith(String song);;
+	List<Songs> findBySongStartsWith(String song);
 
 
 

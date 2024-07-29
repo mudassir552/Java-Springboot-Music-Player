@@ -20,7 +20,7 @@ import org.springframework.data.annotation.Id;
 public class Songs {
 
     @Id
-	private String Id;
+	private String id;
    
  
 
@@ -36,8 +36,10 @@ public class Songs {
     @Field
     private byte[] SongFile;
     
+   
+    
     @Field
-    private Long UserId;
+    private Long userid;
 
 	public Songs() {
 		
@@ -45,25 +47,25 @@ public class Songs {
 	
 	
 
-	public Songs(String id, String song, String artist, byte[] image, byte[] songFile, Long userId) {
+	public Songs(Long userid,String id, String song, String artist, byte[] image, byte[] songFile, Long userId) {
 		super();
-		Id = id;
+		this.id = id;
 		this.song = song;
 		this.artist = artist;
 		this.image = image;
 		SongFile = songFile;
-		UserId = userId;
+		userid = this.userid;
 	}
 
 
 
 
 	public String getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(String id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getSong() {
@@ -111,11 +113,11 @@ public class Songs {
 		}
 		
 		public Long getUserId() {
-			return UserId;
+			return userid;
 		}
 
 		public void setUserId(Long userId) {
-			UserId = userId;
+			userid = userId;
 		}
 
 	

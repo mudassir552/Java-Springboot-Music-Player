@@ -1,0 +1,11 @@
+com\demo\SongsRepo\SongsRepo.class
+com\demo\songresponsedto\AllSongsResponse.class
+com\demo\MainApplication.class
+com\demo\controller\SongController.class
+com\demo\songresponsedto\SongsResponse$Builder.class
+com\demo\songresponsedto\SongsResponse.class
+com\demo\MongoConfig\MongoConfig.class
+com\demo\songs\Songs.class
+com\demo\SongsService\SongsService.class
+com\demo\songconfiguration\SongConfig.class
+com\demo\SongserviceImpl\SongServiceImpl.class
