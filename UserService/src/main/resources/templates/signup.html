@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/login.css}" type="text/css"/>
+</head>
+<body>
+    <form th:action="@{/saveusers}" method="post" th:attr="autocomplete=${false}">
+        <div class="f-body">
+            <h1 style="text-align:center; margin-top:30px;">Sign Up</h1>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="user" required="required" class="form-control" placeholder="Enter Username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required="required" class="form-control" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required="required" class="form-control" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="roles">Role</label>
+                <select id="roles" name="roles" class="form-control">
+                    <option value="Admin">Admin</option>
+                    <option value="Normal">User</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" id="btn" class="btn btn-primary">Sign Up</button>
+    </form>
+    <div class="mt-3">
+        <!-- Additional content or messages can be displayed here -->
+    </div>
+    
+    <script th:src="@{/javascript/Song.js}"></script>
+</body>
+</html>

@@ -2,15 +2,18 @@ package com.example.demo.Controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.cache.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +28,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,6 +45,7 @@ import com.example.demo.FileReader.FileReader;
 //import  com.example.demo.JWT.Jwtservice;
 import com.example.demo.RoleRepo.Rolerepo;
 import com.example.demo.Roles.Role;
+import com.example.demo.SongResponse.Songs;
 import com.example.demo.SongsDto.SongsDto;
 import com.example.demo.UserRepo.Userrepo;
 import com.example.demo.Users.User;
@@ -67,6 +72,21 @@ public class UserController {
 
 	@Autowired
 	private FileCompressAndDecompress FileCompressAndDecompress;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	SecurityContextRepository securityrepo;
+	
+	@Autowired
+	private CacheManager cacheManager;
+	
+
+  private UserSongsService userSongService;
+	
+	
+	
 
 	private static final String SPRING_KEY = "";
 	private static final String UPLOAD_DIRECTORY = "src/main/resources/static/images";
@@ -74,19 +94,90 @@ public class UserController {
 	 * @Autowired private Jwtservice jwtservice;
 	 */
 
-	@Autowired
-	private CacheManager cacheManager;
-	
-	@Autowired
-	private UserSongsService userSongService;
+
 
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	
 	// String api="http://songservice:8082/songs";
 
-	@Autowired
-	private com.example.demo.ConfigDetails.ConfigPropertiesDetails ConfigPropertiesDetails;
+	
+	
+	
+	/*
+	 * private final String FETCH_URL; private final String IMAGE_API_URL; private
+	 * final String USER_API_URL; private final String CREATE_SONGS; private final
+	 * String SONG_SERVICE_URL;
+	 * 
+	 * @Autowired public UserController(@Value("${FETCH_URL}") String FETCH_URL,
+	 * 
+	 * @Value("${IMAGE_API_URL}") String IMAGE_API_URL,
+	 * 
+	 * @Value("${USER_API_URL}") String USER_API_URL,
+	 * 
+	 * @Value("${CREATE_SONGS}") String CREATE_SONGS,
+	 * 
+	 * @Value("${SONG_SERVICE_URL}") String SONG_SERVICE_URL) { this.FETCH_URL =
+	 * FETCH_URL; this.IMAGE_API_URL = IMAGE_API_URL; this.USER_API_URL =
+	 * USER_API_URL; this.CREATE_SONGS = CREATE_SONGS; this.SONG_SERVICE_URL =
+	 * SONG_SERVICE_URL; }
+	 */
+    @Autowired
+    public void setUserSongService(UserSongsService userSongService) {
+        this.userSongService = userSongService;
+    }
+	
+	/*
+	 * @GetMapping("/config") public ResponseEntity<Map<String, String>> getConfig()
+	 * { Map<String, String> config = new HashMap<>(); config.put("FETCH_URL",
+	 * FETCH_URL); config.put("IMAGE_API_URL",IMAGE_API_URL);
+	 * config.put("USER_API_URL", USER_API_URL);
+	 * config.put("CREATE_SONGS",CREATE_SONGS);
+	 * config.put("SONG_SERVICE_URL",SONG_SERVICE_URL); return
+	 * ResponseEntity.ok(config); }
+	 */
+	
+	@GetMapping("/signup")
+	public String signUp(Model model) {
+		
+		//model.addAttribute("Authrequest", new Authrequest());
+		
+		return "signup";
+	}
+	
+	@PostMapping("/saveusers")
+	public String saveSignedUser( @RequestParam("user")String user,@RequestParam("password")String password,@RequestParam("email")String email,@RequestParam("roles") List<String> roles){
+		
+		  if (user == null || user.isEmpty() ||
+			        password == null || password.isEmpty() ||
+			        email == null || email.isEmpty() ||
+			        roles == null || roles.isEmpty()) {
+			        logger.error("One or more parameters are null or empty");
+			        return "error"; // Handle the error scenario appropriately
+			    }
+		
+		
+	   String saveduser=userrepo.saveUserWithRole(user,password,email,roles);
+		if(saveduser!=null) {
+			
+			return "redirect:/login";
+			
+		}
+		
+			return "error";
+		
+	}
+	
+	
+	
+	
+	 @CacheEvict(value = "myCache", allEntries = true)
+	    @PostMapping("/evictCacheForGetUserSongs")
+	  @ResponseBody()
+	    public void evictCacheForGetUserSongs() {
+	        // This method will evict the cache entry for getUserSongs
+		  
+	    }
 
 	@GetMapping("/UserSongs")
 	public String getSongs(Model model, RedirectAttributes redirectAttributes,
@@ -95,43 +186,49 @@ public class UserController {
 
 		
 
-		SongsDto[] songs =userSongService.getUserSongs();
+		SongsDto songs =userSongService.getUserSongs();
+		
+		List<Songs>song=songs.getSongs();
+		
+	
+		
+		
+		int totalPage=songs.getTotalPages();
+		int currentpage=songs.getCurrentPage();
+
 		
 		String key = UserSongsService.class.getName() + ".getUserSongs";
         Cache cache = cacheManager.getCache("myCache");
 
-        
+        logger.info("cache"+cache);
       
         if(cache!=null) {
         	
-        	logger.info(cache+"cacahe is not null null");
+        	
         	Cache.ValueWrapper valueWrapper = cache.get(key);
+        	logger.info("ValueWrapper is"+ valueWrapper);
         	if (valueWrapper != null) {
-        		logger.info(valueWrapper+"ValueWrapper is not null");
-                SongsDto[] cachedSongs = (SongsDto[]) valueWrapper.get();
+        	
+                SongsDto cachedSongs = (SongsDto) valueWrapper.get();
                 ObjectMapper objectMapper = new ObjectMapper();
         		String jsonString = objectMapper.writeValueAsString(cachedSongs);
         		model.addAttribute("Songs", jsonString);
         		 
-        		
+        		model.addAttribute("totalpage", totalPage);
+        		model.addAttribute("currentpage", currentpage);
             
                 
                 return "Authorized";
         }
         	
         	cache.put(key, songs);
-        	    //logger.info("Cache miss for key: " + key);
-        	    
-        	  
-        	    // Process songs...
+        	   
         	
 		ObjectMapper objectMapper = new ObjectMapper();
 		String jsonString = objectMapper.writeValueAsString(songs);
 
 		model.addAttribute("Songs", jsonString);
-		for (SongsDto s : songs) {
-			System.out.println(s.toString());
-		}
+		
 
 		redirectAttributes.addFlashAttribute("userName");
 
@@ -141,12 +238,9 @@ public class UserController {
 	}
 	
 	
+	
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
-
-	@Autowired
-	SecurityContextRepository securityrepo;
+	
 
 	@PostMapping("/user")
 	public ResponseEntity<String> addUser(@RequestBody Authrequest user) throws Exception {
@@ -162,18 +256,18 @@ public class UserController {
 
 		try {
 
-			if (roleStrings.size() <= 0 || roleStrings == null) {
-				response = ResponseEntity.status(400).body("Enter user roles");
+			if (roleStrings.isEmpty()) {
+				ResponseEntity.status(400).body("Enter user roles");
 				throw new IllegalArgumentException("please assign roles to user");
 			}
 
-			if (user.getEmail().isEmpty()) {
-				response = ResponseEntity.status(400).body("Enter Email for user");
+			if (user.getemail().isEmpty()) {
+				 ResponseEntity.status(400).body("Enter Email for user");
 				throw new IllegalArgumentException("please assign roles to user");
 			}
 
 			if (user.getPassword().isEmpty()) {
-				response = ResponseEntity.status(400).body("Enter password for user");
+				ResponseEntity.status(400).body("Enter password for user");
 				throw new IllegalArgumentException("please assign roles to user");
 			}
 
@@ -184,10 +278,10 @@ public class UserController {
 			}
 
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-			String password = passwordEncoder.encode(user.getPassword());
+			String password = passwordEncoder.encode(user.getpassword());
 			u.setName(user.getUsername());
 			u.setPassword(password);
-			u.setEmail(user.getEmail());
+			u.setEmail(user.getemail());
 
 			List<Role> roles = new ArrayList<>();
 
@@ -235,9 +329,9 @@ public class UserController {
 	public String authenticateAndGetToken(Model model, RedirectAttributes redirectAttributes,
 			@ModelAttribute("authRequest") @Valid Authrequest authRequest, BindingResult bindingResult,
 			HttpServletResponse response, HttpServletRequest request) {
-		logger.info("entererd REGISSSTER");
-		if (authRequest == null || authRequest.getUsername() == null || authRequest.getPassword() == null) {
-			logger.info("entererd ");
+		
+		if (  authRequest.getUsername() == null || authRequest.getPassword() == null) {
+			
 			return "null";
 
 		}
@@ -249,7 +343,7 @@ public class UserController {
 
 		try {
 
-			logger.info("entererd tryyyyyy");
+			
 
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
@@ -285,10 +379,18 @@ public class UserController {
 	}
 
 	@GetMapping("/login")
-	public String thymleaf(Model model) {
+	public String login(Model model) {
 		model.addAttribute("Authrequest", new Authrequest());
 		return "login";
 	}
+	
+	
+	@GetMapping("/logout")
+	@ResponseBody
+	public void logout(Model model) {
+		evictCacheForGetUserSongs();
+	}
+	
 
 	@GetMapping("/Authorized")
 	public String user(Model model, @ModelAttribute("userName") String userName) {
@@ -352,12 +454,12 @@ public class UserController {
 	@GetMapping("/ProfileImage")
 	public ResponseEntity<?> getprofileImage() throws IOException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String Username = authentication.getName();
+		String userName = authentication.getName();
 		byte profileImage[] = null;
 		byte decompressedProfileImage[] = null;
-		if (Username != null) {
-			logger.info("inside profile image" + Username);
-			profileImage = userrepo.findByName(Username).getProfileimage();
+		if (userName != null) {
+			logger.info("inside profile image" + userName);
+			profileImage = userrepo.findByName(userName).getProfileimage();
 			decompressedProfileImage = FileCompressAndDecompress.decompressFile(profileImage);
 
 		}
@@ -365,5 +467,31 @@ public class UserController {
 		return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(base64Image);
 
 	}
+	
+	
+	@PostMapping("/createsongs")
+	@ResponseBody
+	public ResponseEntity<?> createSongs(@RequestParam("song") String song,
+	                        @RequestParam("artist") String artist,
+	                        @RequestParam("image") MultipartFile image,
+	                        @RequestParam("songFile") MultipartFile songFile) throws IOException {
+	    
+	    logger.info("createSongs method entered");
+	    
+	    // Get authenticated user details
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String username = authentication.getName();
+	    User user = userrepo.findByName(username);
+	    Long id = user.getId();
+	    logger.info("USER"+user);
+	    logger.info("USERID"+id);
+	    
+	    // Call service method to add user songs
+	   ResponseEntity<?> response= userSongService.addUserSongs(id, song, artist, image, songFile,null);
+	   
+	    return response;
+	}
+
+	
 
 }

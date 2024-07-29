@@ -24,10 +24,11 @@ public class Authrequest {
 	@NotEmpty(message = "password is mandatory")
 	private String password;
 	 
-	 
-	private String Email ;
+	@NotEmpty(message = "Email is mandatory")
+	private String email ;
 	
-	private List<Role>roles;
+	@NotEmpty(message = "please select a role")
+	private List<Role> roles;
 	
 	 public Authrequest() {
 		 
@@ -37,7 +38,7 @@ public class Authrequest {
 		super();
 		this.username=username;
 		this.password=password;
-		Email = email;
+		this.email = email;
 		this.roles=roles;
 	}
 	public String getUsername() {
@@ -54,17 +55,22 @@ public class Authrequest {
 		
 		
 	}
-	public String getEmail() {
-		return Email;
+	public String getemail() {
+		return email;
 	}
-	public void setEmail(String email) {
-		Email = email;
+	public void setemail(String email) {
+		this.email = email;
 	}
 	public List<Role> getRoles() {
 		return roles;
 	}
-	public void setRoles(List<Role> roles) {
+	public void setRoles(  List<Role> roles) {
 		this.roles = roles;
+	}
+
+	public String getpassword() {
+		
+		return password;
 	}
 	
 	

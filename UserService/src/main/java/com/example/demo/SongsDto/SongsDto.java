@@ -1,91 +1,89 @@
 package com.example.demo.SongsDto;
 
+import java.util.List;
+
+import com.example.demo.SongResponse.Songs;
+
 
 
 public class SongsDto {
 
+	
+	  private List<Songs>songs;
 	    
-		private String Id;
+	    
 	   
-		private String song;
+	    private int totalPages;
 	    
-	
-	    private String artist;
+	    private int currentPage;
 	    
-	    
-	    private byte[] image;
-	    
-	
-	    private byte[] SongFile;
-	    
-	    
-	    private Long UserId;
+	    private Long userId;
 
 		public SongsDto() {
 			
 		}
-		
-		
 
-		public SongsDto(String id, String song, String artist, byte[] image, byte[] songFile, Long userId) {
+		
+		
+		
+		
+		public SongsDto(List<Songs> songs, int totalPages, int currentPage, Long userId) {
 			super();
-			Id = id;
-			this.song = song;
-			this.artist = artist;
-			this.image = image;
-			this.SongFile = songFile;
-			this.UserId = userId;
+			this.songs = songs;
+			this.totalPages = totalPages;
+			this.currentPage = currentPage;
+			userId = userId;
 		}
 
 
 
-		public String getId() {
-			return Id;
+
+
+		public List<Songs> getSongs() {
+			return songs;
 		}
 
-		public void setId(String id) {
-			Id = id;
+		public void setSongs(List<Songs> songs) {
+			this.songs = songs;
 		}
 
-		public String getSong() {
-			return song;
+		public int getTotalPages() {
+			return totalPages;
 		}
 
-		public void setSong(String song) {
-			this.song = song;
+		public void setTotalPages(int totalPages) {
+			this.totalPages = totalPages;
 		}
 
-		public String getArtist() {
-			return artist;
+		public int getCurrentPage() {
+			return currentPage;
 		}
 
-		public void setArtist(String artist) {
-			this.artist = artist;
+		public void setCurrentPage(int currentPage) {
+			this.currentPage = currentPage;
 		}
 
-		public byte[] getImage() {
-			return image;
-		}
 
-		public void setImage(byte[] image) {
-			this.image = image;
-		}
 
-		public byte[] getSongFile() {
-			return SongFile;
-		}
 
-		public void setSongFile(byte[] songFile) {
-			SongFile = songFile;
-		}
 
 		public Long getUserId() {
-			return UserId;
+			return userId;
 		}
 
+
+
+
+
 		public void setUserId(Long userId) {
-			UserId = userId;
+			this.userId = userId;
 		}
+
+		
+
+		
+		
+
 		
 		
 }

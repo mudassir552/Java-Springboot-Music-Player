@@ -47,23 +47,29 @@ body{
 }
 .SongsContainer{
 	
-   display:grid;
-   grid-template-columns: 1fr 1fr 1fr;
-   grid-template-rows: 1fr 1fr 1fr;
-   gap:40px;
-  margin-top:100px;
+   display:flex;
+  
+ flex-direction: cloumn;
+
+  margin-top:200px;
     height:auto;
    max-width:1200px;
    
-
+  
   
 }
 
+ .row .card   {
+	margin:3px;
+	padding:2px;
+}
 
+    
+    
 
 .Songimage{
 	max-width:80%;
-	height:auto;
+	height:55%;
 	display:block;
 	object-fit: cover;
     margin:auto;
@@ -97,30 +103,6 @@ body{
 		 
 	 }
 	 
-	
-/*.loader {
-  border: 16px solid #f3f3f3;  Light grey 
-  border-top: 16px solid black;  Blue 
-  border-radius: 50%;
-  width: 70px;
-  position:absolute;
-  left:50%;
-  right:50%;
-  
-  height: 80px;
-  animation: spin 2ms linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg)}; 
- 
-  
-}*/
-.card:nth-last-child(){
-	margin-top:100px;
-}
-
 
 
 /*.audio{
@@ -205,16 +187,32 @@ body{
 }
 
 
+.Pagination{
+	color:red;
+}
+
 .Pagination ul{
 	display:flex;
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
+	
+	position:relative;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(50%);
+    width: 100%;
+    text-align: center;
+	
+gap: 20px;
 }
 .Pagination ul li {
 	list-style: none;
 	margin:10px;
+	 
 }
+
+
 
 .image_Container{
 
@@ -237,4 +235,45 @@ body{
     position: absolute; /* For positioning the image */
     top: 0; /* Position the image at the top */
     left: 0;
+}
+
+
+.paginationlist {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    color:green;
+}
+
+.paginationlist li {
+    margin: 0 5px;
+}
+
+.paginationlist li button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: #007bff;
+}
+
+.paginationlist li button:hover {
+    color: #0056b3;
+}	
+
+.paginationlist li button.active {
+    font-weight: bold;
+    color: #0056b3;
+}
+#ModalCenterSubmit{
+
+	position:relative;
+	top:-20px;
+	left:-30px;
+ 
+}
+#lastcard{
+	width:200px;
 }

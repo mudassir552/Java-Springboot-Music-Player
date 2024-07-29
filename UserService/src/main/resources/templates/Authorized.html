@@ -5,11 +5,14 @@ xmlns:th="http://www.thymeleaf.org"
 	<head>
 		<link th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" rel="stylesheet" />
 		 <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" />
-		 
+		 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">     
 		 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	</head>
 		<body>
 			
@@ -17,7 +20,7 @@ xmlns:th="http://www.thymeleaf.org"
 			 
 			 <div class="Account_info">
 				 <div class="image_Container">
-				 <img class="user_img" onclick="openFileDialog()"  alt="/images/user.png">
+				 <img class="user_img" onclick="openFileDialog()"  src="/images/user_img.png">
 				  </div>
 				 <input type="file" color="green"   th:value="${fileInput}" onchange="handleFileSelect(event)" width:300px; id="fileInput" style="display: none;">
 	          
@@ -28,25 +31,41 @@ xmlns:th="http://www.thymeleaf.org"
 					 <li><a href="/logout">Logout</a></li>
 				 </ul>
 				 </div>
+				 
 			 
 			 <div class="NavContainer">
 			 <input type="text" class="input" placeholder="Enter a song"></input>
 			 <div class="error"><p>please enter a value</div>
 			 <button class="btn" >Submit</button>
 				 </div>
+				 
+				<div class>
+					 	   <ul class="innerContainer">
+                 <li class="inner" th:each="s,iStat:${Songs}" th:attr="data-index=${iStat.count+1} ,Song=${s} , totalpage=${totalpage},currentpage=${currentpage}"> </li>
+                       
+                       
+
+                </ul>
+					 </div>
 				
 			 
 			 <div class="searchContainer">
 			 
              	<div class ="SongsContainer" >
             
-			   <ul class="innerContainer">
-                 <li class="inner" th:each="s,iStat:${Songs}" th:attr="data-index=${iStat.count+1} ,Song=${s}"> </li>
-                       
-                </ul>
+		
+                <div class="loader" style="margin:auto; position:relative;">
+					
+					<i class="fa fa-spinner fa-spin" style="font-size:34px;"></i>
+					</div>
+                
+                
+   
           </div>
 		</div>
 		
+		
+
 		
 		
 
@@ -61,7 +80,7 @@ xmlns:th="http://www.thymeleaf.org"
         </button>
       </div>
       <div class="modal-body">
-        ...
+       
         <h3 color="red" class="modal-body-h3"></h3>
       </div>
      
@@ -69,18 +88,48 @@ xmlns:th="http://www.thymeleaf.org"
   </div>
 </div>
 
+
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Songs</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="songmodal">
+        <form id="songForm" enctype="multipart/form-data">
+          <div class="f-body">
+            <div class="form-group">
+              <label>Song</label>
+              <input type="text" class="form-control" name="song" id="exampleInputEmail1" aria-describedby="emailHelp" required="required" placeholder="Enter Song">
+            </div>
+            <div class="form-group">
+              <label>Artist Name</label>
+              <input type="text" class="form-control" name="artist" id="exampleInputPassword1" required="required" placeholder="Artist Name">
+            </div>
+            <div class="form-group">
+              <label>Image</label>
+              <input type="file" class="form-control-file" name="image" id="exampleInputPassword1" required="required">
+            </div>
+            <div class="form-group">
+              <label>Upload MP3 File</label>
+              <input type="file" class="form-control-file" name="songFile" id="exampleInputPassword1" required="required">
+            </div>
+          </div>
+          <button type="submit" id="ModalCenterSubmit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
   
+  
+     
+    
 		
-		<div class="Pagination">
-			<ul class="paginationlist">
-				<button class="prev">prev</button>
-				<li>1</li>
-				<li>2</li>
-				<li>3</li>
-				<button class="next">next</button>
-				
-				</ul>
-			</div>
+		
        <script th:src="@{/javascript/Song.js}"></script>
 			
 		</body>

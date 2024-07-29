@@ -86,12 +86,12 @@ SecurityContextRepository securityContextRepository() {
 		  
 		  logger.info("enter security configggggggggg");
 		requests.requestMatchers("**/login/**","**/html/**", "**/js/**",
-  "**/css/**", "**/user/**","**/html/**", "**/son/**","/favicon.ico","/webjars/**","/css/styles.css","/error","/","public/","static/","/ProfileImage","resources/","**/Song.js/**","**/images/**","/UserImage","*/*.jpg").permitAll()
-  .requestMatchers("/user","/actuator/**").permitAll()
-  .requestMatchers("/register","/accounts","/acesss","/Authorized","/userinfo").permitAll()
+  "**/css/**", "**/user/**","**/html/**", "**/son/**","/favicon.ico","/webjars/**","/css/styles.css","/error","/","public/","static/","/ProfileImage","resources/","**/Song.js/**","**/signup/**","**/saveusers/**","**/images/**","/UserImage","*/*.jpg").permitAll()
+  
+  .requestMatchers("/user","/evictCacheForGetUserSongs","/actuator/**","/register","/accounts","/acesss","/Authorized","/userinfo","/config").permitAll()
   
   .requestMatchers("/AuthDetails").authenticated()
-  .requestMatchers("/UserSongs").authenticated()
+  .requestMatchers("/UserSongs","**/createsongs/**").authenticated()
   
   .and().formLogin(formLogin -> formLogin.loginPage("/login")
 		  

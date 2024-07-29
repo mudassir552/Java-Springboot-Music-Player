@@ -27,10 +27,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency>
+	
 
        <dependency>
     <groupId>com.github.ben-manes.caffeine</groupId>
@@ -217,7 +214,7 @@
         <version>3.4.0</version>
         <configuration>
           <to>
-            <image>registry-1.docker.io/shakeebmd9375/userservice:s1</image>
+            <image>registry-1.docker.io/shakeebmd9375/userservice:s13</image>
             <auth>
                 <username>shakeebmd9@gmail.com</username>
                 <password>shakeebS22@</password>

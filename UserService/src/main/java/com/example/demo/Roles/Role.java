@@ -41,6 +41,7 @@ public class Role {
 		this.Role =Role;
 	}
 
+
 	public Long getRoleid() {
 		return roleid;
 	}
@@ -58,6 +59,12 @@ public class Role {
 		this.Role = Role;
 	}
 	
-    
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "roleName='" + Role+ '\'' +
+                '}';
+    }
     
 }

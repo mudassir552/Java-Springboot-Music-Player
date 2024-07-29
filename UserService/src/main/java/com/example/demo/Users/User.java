@@ -18,6 +18,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -38,16 +39,17 @@ public class User {
 	@Column(nullable=false)
 	private String Email;
 	
-	
+	@Lob
+    @Column(name = "profile_image", nullable = true, columnDefinition="LONGBLOB")
 	private byte[] Profileimage;
 	
 
- @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @OneToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="user_id",nullable=false)
 	private List<Role> role;
-	
-  
-
+	                                                                                        
+ 
+   private String primaryUserRole;
 
 
 
@@ -117,6 +119,10 @@ public User(Long id, String name, String email, byte[] profileimage, List<Role> 
 		this.role = role;
 	}
 
+
+	public void setRole(String role) {
+		this.primaryUserRole = role;
+	}
 
 	public byte[] getProfileimage() {
 		return Profileimage;
