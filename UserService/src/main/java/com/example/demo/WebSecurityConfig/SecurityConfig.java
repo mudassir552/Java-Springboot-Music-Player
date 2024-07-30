@@ -88,11 +88,11 @@ SecurityContextRepository securityContextRepository() {
 		requests.requestMatchers("**/login/**","**/html/**", "**/js/**",
   "**/css/**", "**/user/**","**/html/**", "**/son/**","/favicon.ico","/webjars/**","/css/styles.css","/error","/","public/","static/","/ProfileImage","resources/","**/Song.js/**","**/signup/**","**/saveusers/**","**/images/**","/UserImage","*/*.jpg").permitAll()
   
-  .requestMatchers("/user","/evictCacheForGetUserSongs","/actuator/**","/register","/accounts","/acesss","/Authorized","/userinfo","/config").permitAll()
+  .requestMatchers("/user","/evictCacheForGetUserSongs","/actuator/**","/register","/accounts","/acesss","/Authorized","/userinfo","/config","/**/Spotify/**","/logins","/**/callback/**").permitAll()
   
   .requestMatchers("/AuthDetails").authenticated()
   .requestMatchers("/UserSongs","**/createsongs/**").authenticated()
-  
+  .anyRequest().authenticated()
   .and().formLogin(formLogin -> formLogin.loginPage("/login")
 		  
   .loginProcessingUrl("/register").defaultSuccessUrl("/UserSongs") .failureUrl("/login?error=true")

@@ -12,6 +12,7 @@ let error = document.querySelector('.error');
 let searchContainer = document.querySelector('.search-btn');
 let exampleModalCenter=document.getElementById("#exampleModalCenter");
 let pageElementsSize = 15;
+let imageContainer=document.querySelector(".image_Container")
 let page = 0;
 let loader=document.querySelector(".loader");
 let innerContainer=document.querySelector(".innerContainer");
@@ -29,6 +30,9 @@ let createsongs="http://localhost:8080/createsongs";
 
 document.addEventListener('DOMContentLoaded', async () => {
     //await fetchConfiguration();
+    
+ 
+    
     if(SongsContainer.innerHTML==""){
 		
 		loader.style.display="block";
@@ -204,7 +208,7 @@ function addLastCardelem(Songs) {
         <div class="card" id="last-card" style="margin-bottom:0px;">
             <div class="card-body">
                 <button type="button" class="lastcardSongs" data-toggle="modal" data-target="#exampleModalCenter">
-                    <h2 class="card-title" style="text-align:center">+</h2>
+                    <h2 class="card-title" class="addbutton" style="text-align:center">+</h2>
                 </button>
             </div>
         </div>

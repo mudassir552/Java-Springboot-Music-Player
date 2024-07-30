@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Thymeleaf Application</title>
+    
+     <link rel="stylesheet" type="text/css" th:href="@{/css/Spotify.css}" />
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+</head>
+
+    <h1 style="color:aqua">Spotify here</h1>
+      <div class="input-container">
+        <label for="artistname">Artist Name:</label>
+        <input type="text" style="width:200px;" id="artistname" class="artistname">
+        <button type="button" style="margin-right:-20px; width:100px" class="submit_btn" >submit</button>
+    </div>
+    <p th:text="${accessToken}"  style="display:none"class="token">Access Token</p>
+    <div id="songs-container"></div>
+    <button id="load-more" style="margin:auto;display:block">Load More</button>
+    <script th:src="@{/javascript/Spotify.js}"></script>
+</body>
+</html>
